@@ -21,33 +21,36 @@ import com.fdsoftware.services.UserService;
 @RestController
 @RequestMapping(value = "/users")
 public class UserResorce {
-	
+
 	@Autowired
 	private UserService service;
-	
-	@RequestMapping(method = RequestMethod.GET)	
+
+	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<UserDTO>> findAll() {
 		List<User> users = service.findAll();
 		List<UserDTO> listDTO = users.stream().map(x -> new UserDTO(x)).collect(Collectors.toList());
 		return ResponseEntity.ok().body(listDTO);
 	}
-	
-	@RequestMapping(value = "/{id}", method = RequestMethod.GET)	
+
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity<UserDTO> findById(@PathVariable String id) {
 		User user = service.findById(id);
 		return ResponseEntity.ok().body(new UserDTO(user));
 	}
-	
-	//@RequestMapping(method = RequestMethod.POST)
-	@PostMapping	
+
+	// @RequestMapping(method = RequestMethod.POST)
+	@PostMapping
 	public ResponseEntity<Void> insert(@RequestBody UserDTO userDto) {
 		User user = service.fromDTO(userDto);
 		user = service.insert(user);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(user.getId()).toUri();
 		return ResponseEntity.created(uri).build();
-	} 
-	
-	
-	
+	}
+
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+	public ResponseEntity<Void> insert(@PathVariable String id) {
+		service.delete(id);
+		return ResponseEntity.noContent().build();
+	}
 
 }
